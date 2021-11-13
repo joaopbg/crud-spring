@@ -1,8 +1,11 @@
+import { ErrorDialogComponent } from './../../shared/error-dialog/error-dialog.component';
 import { CoursesService } from './../services/courses.service';
 import { Component, OnInit } from '@angular/core';
 import { Course } from '../model/course';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-courses',
@@ -18,16 +21,23 @@ export class CoursesComponent implements OnInit {
   displayedColumns = ['name', 'category'];
 
 
-  constructor(private CoursesService : CoursesService) {
+  constructor(private CoursesService : CoursesService,
+              public dialog : MatDialog) {
     this.courses$ = this.CoursesService.list().pipe(
       catchError(error => {
-        console.log(error)
+        this.onError("Ops! Courses not found :/")
         return of([])
       })
     );
   }
 
   ngOnInit(): void {
+  }
+
+  onError( errorMsg: string){
+    this.dialog.open(ErrorDialogComponent, {
+      data: errorMsg
+    });
   }
 
 }
